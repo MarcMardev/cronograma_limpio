@@ -39,7 +39,7 @@ cronograma_limpio/
 
 Instalación rápida:
 ```bash
-pip install pandas networkx matplotlib plotly kaleido
+conda install pandas networkx matplotlib plotly kaleido
 ```
 
 ---
