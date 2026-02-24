@@ -510,4 +510,3 @@ print(f"\n{'='*80}")
 print(f"¡Análisis completado!")
 print(f"{'='*80}")
 
-# esto es un cambio no registrado
