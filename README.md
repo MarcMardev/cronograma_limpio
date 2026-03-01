@@ -15,14 +15,27 @@ cronograma_limpio/
     ├── index.py                   # PERT + Gantt sin restricciones de recursos
     ├── index_recursos.py          # PERT + Gantt con restricciones de recursos
     ├── ANALISIS_IMPACTO_RECURSOS.md  # Análisis comparativo de ambos escenarios
-    ├── images-no-requirements/    # Diagramas generados sin restricciones
+    ├── images/                    # Diagramas generados por index.py
+    │   ├── cronograma_pert.png
     │   ├── gantt_izquierda.html
     │   ├── gantt_centrado.html
     │   └── gantt_derecha.html
-    └── images-with-requirements/  # Diagramas generados con restricciones
+    ├── images-no-requirements/    # Diagramas generados sin restricciones (por index_recursos.py)
+    │   ├── cronograma_pert.png
+    │   ├── gantt_izquierda.html
+    │   ├── gantt_izquierda.png
+    │   ├── gantt_centrado.html
+    │   ├── gantt_centrado.png
+    │   ├── gantt_derecha.html
+    │   └── gantt_derecha.png
+    └── images-with-requirements/  # Diagramas generados con restricciones (por index_recursos.py)
+        ├── cronograma_pert.png
         ├── gantt_izquierda.html
+        ├── gantt_izquierda.png
         ├── gantt_centrado.html
-        └── gantt_derecha.html
+        ├── gantt_centrado.png
+        ├── gantt_derecha.html
+        └── gantt_derecha.png
 ```
 
 ---
@@ -40,7 +53,7 @@ cronograma_limpio/
 
 Instalación rápida:
 ```bash
-pip install pandas networkx matplotlib plotly kaleido
+conda install pandas networkx matplotlib plotly kaleido
 ```
 
 ---
@@ -105,8 +118,28 @@ Calcula los tiempos PERT mediante **recursión** y genera:
 - **`images/gantt_centrado.html`** — Gantt con inicio equilibrado (holgura repartida).
 - **`images/gantt_derecha.html`** — Gantt con inicio tardío (máxima holgura al inicio).
 
-**Duración total del proyecto: 13 semanas.**  
-**Camino crítico:** B → D → E → F → G → I → J → K → N → M (10 tareas).
+#### Declaración de datos iniciales
+```python
+tasks = {
+    "A": {"nombre": "Detectar Stakeholders", "duracion": 1, "dependencias": []},
+    "B": {"nombre": "Identificar infraestructuras", "duracion": 1, "dependencias": []},
+    "C": {"nombre": "Documentación técnica", "duracion": 8, "dependencias": []},
+    "D": {"nombre": "Buscar Dataset secundario", "duracion": 1, "dependencias": []},
+    "E": {"nombre": "Explorar Dataset", "duracion": 1, "dependencias": ["D"]},
+    "F": {"nombre": "Unificar datasets", "duracion": 1, "dependencias": ["E"]},
+    "G": {"nombre": "Definir batches", "duracion": 1, "dependencias": ["F"]},
+    "H": {"nombre": "Definir Cronograma (PERT/Gantt)", "duracion": 1, "dependencias": [ "B"]},
+    "I": {"nombre": "Entrenar Modelo", "duracion": 2, "dependencias": ["G", "H"]},
+    "J": {"nombre": "Validación cruzada", "duracion": 1, "dependencias": ["I"]},
+    "K": {"nombre": "Clasificadora CLI", "duracion": 2, "dependencias": ["J"]},
+    "L": {"nombre": "Desarrollar UI/UX Web", "duracion": 0.5, "dependencias": []},
+    "N": {"nombre": "Integrar IA en la Web", "duracion": 1, "dependencias": ["K", "L"]},
+    "M": {"nombre": "Despliegue web", "duracion": 1, "dependencias": ["N"]}
+}
+```
+
+**Duración total del proyecto: 11 semanas.**  
+**Camino crítico:** D → E → F → G → I → J → K → N → M (9 tareas).
 
 ### `index_recursos.py` — Con restricciones de recursos
 
@@ -120,20 +153,36 @@ Extiende el modelo anterior añadiendo disponibilidad de recursos:
 
 Ejecuta **dos pasadas** (sin y con restricciones) y guarda los diagramas en `images-no-requirements/` e `images-with-requirements/` respectivamente.
 
-**Duración total CON restricciones: 17 semanas (+4 semanas, +30.8%).**  
-**Camino crítico CON restricciones:** C — Documentación técnica (1 sola tarea crítica).
+#### Declaración de datos iniciales
+```python
+# Diccionario de disponibilidad de recursos (semana en que están disponibles)
+disponibilidad_recursos = {
+    'Servidor': 5,
+    'Responsable Web': 0,
+    'Dataset': 3
+}
 
----
+tasks = {
+    "A": {"nombre": "Detectar Stakeholders", "duracion": 1, "dependencias": [], "requisitos": []},
+    "B": {"nombre": "Identificar infraestructuras", "duracion": 1, "dependencias": [], "requisitos": []},
+    "C": {"nombre": "Documentación técnica", "duracion": 8, "dependencias": [], "requisitos": []},
+    "D": {"nombre": "Buscar Dataset secundario", "duracion": 1, "dependencias": [], "requisitos": []},
+    "E": {"nombre": "Explorar Dataset", "duracion": 1, "dependencias": ["D"], "requisitos": ["Dataset"]},
+    "F": {"nombre": "Unificar datasets", "duracion": 1, "dependencias": ["E"], "requisitos": ["Dataset"]},
+    "G": {"nombre": "Definir batches", "duracion": 1, "dependencias": ["F"], "requisitos": []},
+    "H": {"nombre": "Definir Cronograma (PERT/Gantt)", "duracion": 1, "dependencias": [ "B"], "requisitos": []},
+    "I": {"nombre": "Entrenar Modelo", "duracion": 2, "dependencias": ["G", "H"], "requisitos": ["Servidor", "Dataset"]},
+    "J": {"nombre": "Validación cruzada", "duracion": 1, "dependencias": ["I"], "requisitos": ["Servidor", "Dataset"]},
+    "K": {"nombre": "Clasificadora CLI", "duracion": 2, "dependencias": ["J"], "requisitos": []},
+    "L": {"nombre": "Desarrollar UI/UX Web", "duracion": 0.5, "dependencias": [], "requisitos": ["Responsable Web"]},
+    "N": {"nombre": "Integrar IA en la Web", "duracion": 1, "dependencias": ["K", "L"], "requisitos": ["Responsable Web"]},
+    "M": {"nombre": "Despliegue web", "duracion": 1, "dependencias": ["N"], "requisitos": ["Responsable Web"]}
+}
+```
 
-## Análisis de impacto de recursos
+**Duración total CON restricciones: 13 semanas (+2 semanas, +18.2%).**  
+**Camino crítico CON restricciones:** E → F → G → I → J → K → M → N (8 tareas).
 
-Consulta [`cronograma_complejo/ANALISIS_IMPACTO_RECURSOS.md`](cronograma_complejo/ANALISIS_IMPACTO_RECURSOS.md) para el análisis detallado, que incluye:
-
-- Comparativa de tiempos y holguras por tarea entre ambos escenarios.
-- Identificación del **cuello de botella** (Dataset Limpio bloquea la Documentación Técnica 5 semanas).
-- Recomendaciones estratégicas para recuperar hasta 4 semanas de duración.
-
----
 
 ## Ejecución
 
