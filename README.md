@@ -1,6 +1,6 @@
 # Cronogramas PERT / Gantt — Proyecto I: Introducción a la IA
 
-Implementación de diagramas **PERT** y **Gantt** en Python para la planificación del *Ciclo de vida del software* (apartado 7 del proyecto). Se incluyen dos versiones: una introducción básica en Jupyter Notebook y una implementación avanzada con análisis de restricciones de recursos.
+Implementación de diagramas **PERT** y **Gantt** en Python para la planificación del *Ciclo de vida del software* (apartado 7 del proyecto). Se incluyen dos versiones: una introducción básica en Jupyter Notebook (ejercicios del pdf `Práctica 2`) y una implementación avanzada con análisis de restricciones de recursos.
 
 ---
 
